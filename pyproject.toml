@@ -3,7 +3,7 @@ name = "life_expectancy"
 version = "0.1.0"
 description = "First assignment of the Foundations Learning Path"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
     { name = "Matilde Saraiva", email = "matilde.soares.saraiva@gmail.com" }
 ]
