@@ -16,7 +16,8 @@ dev = [
     "pytest",
     "pylint",
     "pytest-cov",
-    "toml"
+    "toml",
+    "setuptools"
 ]
 
 [build-system]
