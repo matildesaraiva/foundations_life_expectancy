@@ -24,7 +24,7 @@ jobs:
       - name: Update lock file
         run: poetry lock
       - name: Install dependencies
-        run: poetry install --with dev
+        run: poetry install --extras dev
       - name: Run pylint
         run: poetry run pylint life_expectancy
       - name: Run pytest
