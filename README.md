@@ -1,3 +1,5 @@
+[![CI Pipeline](https://github.com/matildesaraiva/foundations_life_expectancy/actions/workflows/ci.yml/badge.svg)](https://github.com/matildesaraiva/foundations_life_expectancy/actions/workflows/ci.yml)
+
 # Foundations Learning Path Assignments
 
 ## Introduction
