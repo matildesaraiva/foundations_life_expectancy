@@ -19,7 +19,7 @@ def load_data():
         'life_expectancy',
         'data',
         'eu_life_expectancy_raw.tsv'
-        )
+    )
 
     life_expectancy_df = pd.read_csv(file_path, sep='\t')
     return life_expectancy_df
