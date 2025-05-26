@@ -1,5 +1,5 @@
 """
-This module cleans the raw life expectancy dataset and converts it into a dataset 
+This module cleans the raw life expectancy dataset and converts it into a dataset
 for Portugal by default. You can also specify a different country for the dataset.
 """
 
@@ -12,7 +12,7 @@ def load_data():
     Loads the raw life expectancy data from the .tsv file.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(script_dir)   
+    project_dir = os.path.dirname(script_dir)
     file_path = os.path.join(
         project_dir,
         'life_expectancy',
