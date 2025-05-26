@@ -12,8 +12,7 @@ def load_data():
     Loads the raw life expectancy data from the .tsv file.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(script_dir)
-    
+    project_dir = os.path.dirname(script_dir)   
     file_path = os.path.join(
         project_dir,
         'life_expectancy',
