@@ -14,10 +14,10 @@ def load_data():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_dir = os.path.dirname(script_dir)
     file_path = os.path.join(
-    project_dir, 
-    'life_expectancy', 
-    'data', 
-    'eu_life_expectancy_raw.tsv')
+        project_dir,
+        'life_expectancy',
+        'data',
+        'eu_life_expectancy_raw.tsv')
 
     life_expectancy_df = pd.read_csv(file_path, sep='\t')
     return life_expectancy_df
