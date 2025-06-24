@@ -2,7 +2,6 @@
 
 import pandas as pd
 
-from . import FIXTURES_DIR
 from life_expectancy.loading_data import load_data
 
 def test_load_data(eu_life_expectancy_raw):

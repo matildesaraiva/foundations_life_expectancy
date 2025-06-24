@@ -10,7 +10,11 @@ def load_data(base_dir=None, use_fixture: bool = False) -> pd.DataFrame:
     project_dir = os.path.dirname(script_dir)
 
     if base_dir is None:
-        base_dir = 'life_expectancy/tests/fixtures' if use_fixture else 'life_expectancy/data'
+        base_dir = (
+            'life_expectancy/tests/fixtures'
+            if use_fixture
+            else 'life_expectancy/data'
+        )
 
     file_path = os.path.join(project_dir, base_dir, 'eu_life_expectancy_raw.tsv')
 
