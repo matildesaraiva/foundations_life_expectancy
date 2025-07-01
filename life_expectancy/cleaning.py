@@ -3,82 +3,72 @@ This module cleans the raw life expectancy dataset and converts it into a datase
 for Portugal by default. You can also specify a different country for the dataset.
 """
 
-import os
+from typing import Optional
 import argparse
 import pandas as pd
 
-def load_data():
-    """
-    Loads the raw life expectancy data from the .tsv file.
-    """
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(script_dir)
-    file_path = os.path.join(
-        project_dir,
-        'life_expectancy',
-        'data',
-        'eu_life_expectancy_raw.tsv'
-    )
+from life_expectancy.loading_data import load_data
+from life_expectancy.preprocessing_data import clean_data
+from life_expectancy.saving_data import save_data
 
-    life_expectancy_df = pd.read_csv(file_path, sep='\t')
-    return life_expectancy_df
-
-
-def clean_data(life_expectancy_df: pd.DataFrame, country_code: str = 'PT') -> pd.DataFrame:
-    """
-    Cleans and processes the raw life expectancy data.
-    """
-    life_expectancy_df.columns = life_expectancy_df.columns.str.replace(' ', '')
-
-    life_expectancy_df[['unit', 'sex', 'age', 'region']] = (
-        life_expectancy_df['unit,sex,age,geo\\time'].str.split(',', expand=True)
-    )
-    life_expectancy_df = life_expectancy_df.drop('unit,sex,age,geo\\time', axis=1)
-    life_expectancy_df = life_expectancy_df[life_expectancy_df['region'] == country_code]
-
-    life_expectancy_df_melted = pd.melt(
-        life_expectancy_df,
-        id_vars=['unit', 'sex', 'age', 'region'],
-        var_name='year',
-        value_name='value'
-    ).query('value != ": "')
-
-    life_expectancy_df_melted['value'] = pd.to_numeric(
-        life_expectancy_df_melted['value'].str.replace(r'[^0-9.^0-9]', '', regex=True),
-        errors='coerce'
-    )
-    life_expectancy_df_melted['year'] = life_expectancy_df_melted['year'].astype(int)
-
-    return life_expectancy_df_melted
-
-
-def save_data(life_expectancy_df: pd.DataFrame, country_code: str = 'PT'):
-    """
-    Saves the cleaned data to a CSV file.
-    """
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(script_dir)
-    output_file_path = os.path.join(
-        project_dir,
-        'life_expectancy',
-        'data',
-        f'{country_code}_life_expectancy.csv'
-    )
-    life_expectancy_df.to_csv(output_file_path, index=False)
-
-
-def main():
+def main(raw_data: Optional[pd.DataFrame] = None) -> pd.DataFrame:
     """
     Main function for cleaning life expectancy data.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--country', default='PT')
+    parser.add_argument('--country', default='PT', help='Country code')
+    parser.add_argument('--all', action='store_true', help='All countries')
+    parser.add_argument(
+        '--fixture',
+        action='store_true',
+        help='Uses fixture as input',
+    )
     args = parser.parse_args()
+    
+    # If raw_data was passed, consider --all countries run
+    if raw_data is not None:
+        args.all = True
 
-    raw_data = load_data()
-    cleaned_data = clean_data(raw_data, country_code=args.country)
-    save_data(cleaned_data, country_code=args.country)
+    # load if needed
+    if raw_data is None:    
+        raw_data = load_data(use_fixture=args.fixture)
 
+    # clean
+    if args.all:
+        cleaned_data = clean_data(
+            raw_data,
+            country_code=None,
+            use_fixture=args.fixture,
+        )
+    else:
+        cleaned_data = clean_data(
+            raw_data,
+            country_code=args.country,
+            use_fixture=args.fixture,
+        )
+    
+    # If no data is found
+    if cleaned_data.empty:
+        target = 'ALL' if args.all else args.country.upper()
+        raise ValueError(f"No data found for '{target}'.")
+    
+    # save and report
+    if args.all:
+        save_path = save_data(
+            cleaned_data,
+            country_code='ALL',
+            use_fixture=args.fixture,
+        )
+    else:
+        save_path = save_data(
+            cleaned_data,
+            country_code=args.country,
+            use_fixture=args.fixture,
+        )
+    print(f"Location of the file: {save_path}")
 
-if __name__ == '__main__':  # pragma: no cover
+    return cleaned_data
+
+if __name__ == "__main__":
     main()
+    
