@@ -71,4 +71,3 @@ def main(raw_data: Optional[pd.DataFrame] = None) -> pd.DataFrame:
 
 if __name__ == "__main__":
     main()
-    

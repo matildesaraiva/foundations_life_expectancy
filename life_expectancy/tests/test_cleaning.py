@@ -2,7 +2,15 @@
 import sys
 import pandas as pd
 
+from life_expectancy.region import Region
 from life_expectancy.cleaning import main
+
+def _exclude_groups(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Keep only actual countries.
+    """
+    keep = {m.value for m in Region.country_members()}
+    return df[df["region"].isin(keep)].reset_index(drop=True)
 
 def test_main(eu_life_expectancy_raw, eu_life_expectancy_expected):
     """
@@ -12,12 +20,12 @@ def test_main(eu_life_expectancy_raw, eu_life_expectancy_expected):
 
     pd.testing.assert_frame_equal(
         cleaned.reset_index(drop=True),
-        eu_life_expectancy_expected.reset_index(drop=True)
+        _exclude_groups(eu_life_expectancy_expected),
     )
 
 def test_main_flag_all(monkeypatch, eu_life_expectancy_expected):
     """
-    Testing if --fixture with --all return the same as
+    Testing if --fixture with --all returns the same as
     eu_life_expectancy_expected's fixture.
     """
     monkeypatch.setattr(sys, 'argv', [
@@ -26,7 +34,7 @@ def test_main_flag_all(monkeypatch, eu_life_expectancy_expected):
     cleaned = main()
     pd.testing.assert_frame_equal(
         cleaned.reset_index(drop=True),
-        eu_life_expectancy_expected.reset_index(drop=True)
+        _exclude_groups(eu_life_expectancy_expected),
     )
 
 def test_main_flag_country(pt_life_expectancy_expected, monkeypatch):
