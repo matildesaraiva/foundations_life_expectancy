@@ -1,12 +1,16 @@
 import pandas as pd
-from typing import Optional
+from typing import Optional, Union
 
 from life_expectancy.loading_data import load_data
+from life_expectancy.region import Region
+
+# Saving all country members if necessary
+_ALL_COUNTRY_CODES = {m.value for m in Region.country_members()}
 
 def clean_data(
     life_expectancy_df: Optional[pd.DataFrame] = None,
     *,
-    country_code: Optional[str] = None,
+    country_code: Optional[Union[str, Region]] = None,
     use_fixture: bool = False,
 ) -> pd.DataFrame:
     """
@@ -28,10 +32,20 @@ def clean_data(
     
     # filter by country if country_code exists
     if country_code is not None:
+        if isinstance(country_code, Region):
+            country_code = country_code.value
         country_code = country_code.upper()
+
+        if country_code not in _ALL_COUNTRY_CODES:
+            raise ValueError(f"'{country_code}' is not a valid country code.")
+        
         life_expectancy_df = life_expectancy_df[
             life_expectancy_df['region'] == country_code
             ]
+    else:
+        life_expectancy_df = life_expectancy_df[
+            life_expectancy_df['region'].isin(_ALL_COUNTRY_CODES)
+        ]
     
     # create year and value variables
     life_expectancy_df = (
@@ -52,4 +66,5 @@ def clean_data(
 
     # assure year is an integer
     life_expectancy_df['year'] = life_expectancy_df['year'].astype(int)
+    
     return life_expectancy_df
