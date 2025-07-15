@@ -1,9 +1,11 @@
 import os
 import pandas as pd
 
+from life_expectancy.loader_factory_pattern import get_loader
+
 def load_data(base_dir=None, use_fixture: bool = False) -> pd.DataFrame:
     """
-    Loads the raw life expectancy data from the .tsv file.
+    Loads the raw life expectancy data from a data file.
     If use_fixture is True, loads the test fixture version.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,9 +18,9 @@ def load_data(base_dir=None, use_fixture: bool = False) -> pd.DataFrame:
             else 'life_expectancy/data'
         )
 
-    file_path = os.path.join(project_dir, base_dir, 'eu_life_expectancy_raw.tsv')
+    file_path = os.path.join(project_dir, base_dir, 'eurostat_life_expect.zip')
 
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found at: {file_path}")
 
-    return pd.read_csv(file_path, sep='\t')
+    return get_loader(file_path).load_data()
